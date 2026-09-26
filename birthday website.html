@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday! 🎂</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Patrick+Hand&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            /* COLOR PALETTE DARI REQUEST */
+            --cherry-rose: #B5185F;
+            --light-yellow: #FEFFE0;
+            --lime-cream: #D0E86E;
+            --strong-cyan: #35C1C2;
+            
+            /* Warna tambahan untuk teks dan garis agar harmonis (diambil dari warna background gambar palet) */
+            --dark-teal: #163832; 
+        }
+
+        body {
+            font-family: 'Patrick Hand', cursive;
+            background-color: var(--light-yellow);
+            color: var(--dark-teal);
+            overflow-x: hidden;
+            margin: 0;
+            padding: 0;
+        }
+
+        .font-caveat {
+            font-family: 'Caveat', cursive;
+        }
+
+        .bg-stripes {
+            background: repeating-linear-gradient(
+                90deg,
+                var(--light-yellow),
+                var(--light-yellow) 40px,
+                var(--lime-cream) 40px,
+                var(--lime-cream) 80px
+            );
+            position: relative;
+        }
+        
+        .bg-stripes::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 15px;
+            background: repeating-linear-gradient(90deg, var(--cherry-rose), var(--cherry-rose) 15px, var(--light-yellow) 15px, var(--light-yellow) 30px);
+            z-index: 10;
+        }
+
+        .bg-dots {
+            background-color: var(--strong-cyan);
+            background-image: 
+                radial-gradient(var(--light-yellow) 10%, transparent 11%),
+                radial-gradient(var(--light-yellow) 10%, transparent 11%);
+            background-size: 40px 40px;
+            background-position: 0 0, 20px 20px;
+        }
+
+        .interactive-card {
+            background-color: var(--light-yellow);
+            border: 3px solid var(--dark-teal);
+            box-shadow: 8px 8px 0px var(--dark-teal);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            transform-style: preserve-3d;
+        }
+        .interactive-card:hover {
+            transform: scale(1.05) rotate(-2deg);
+        }
+        .interactive-card.opened {
+            transform: scale(1.1) rotate(2deg);
+            background-color: var(--lime-cream);
+            box-shadow: 12px 12px 0px var(--dark-teal);
+            border-color: var(--dark-teal);
+        }
+        .card-inner-text {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .calendar-wrapper {
+            background: var(--light-yellow);
+            border: 3px solid var(--dark-teal);
+            border-radius: 8px;
+            box-shadow: 10px 10px 0px rgba(22, 56, 50, 0.2);
+            position: relative;
+        }
+
+        .calendar-spiral {
+            position: absolute;
+            top: -15px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-evenly;
+            z-index: 20;
+        }
+        .spiral-ring {
+            width: 12px;
+            height: 35px;
+            background: var(--light-yellow);
+            border-radius: 20px;
+            border: 2px solid var(--dark-teal);
+            box-shadow: inset -2px -2px 0px rgba(0,0,0,0.1), 2px 2px 0px var(--dark-teal);
+        }
+        .spiral-hole {
+            width: 16px;
+            height: 16px;
+            background: var(--strong-cyan);
+            border-radius: 50%;
+            position: absolute;
+            bottom: -5px;
+            left: -4px;
+            border: 2px solid var(--dark-teal);
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            border-top: 2px solid var(--dark-teal);
+        }
+        .calendar-cell {
+            border-bottom: 2px solid var(--dark-teal);
+            border-right: 2px solid var(--dark-teal);
+            min-height: 140px;
+            position: relative;
+            padding: 10px;
+        }
+        .calendar-cell:nth-child(3n) {
+            border-right: none;
+        }
+        
+        .polaroid {
+            background: var(--light-yellow);
+            padding: 10px 10px 40px 10px;
+            box-shadow: 8px 8px 0px rgba(22, 56, 50, 0.15);
+            border: 2px solid var(--dark-teal);
+            position: relative;
+            transition: transform 0.3s ease;
+        }
+        .polaroid:hover {
+            transform: scale(1.05) !important;
+            z-index: 30;
+        }
+        
+        .washi-tape {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            width: 90px;
+            height: 30px;
+            border: 1px dashed rgba(22, 56, 50, 0.3);
+            transform: translateX(-50%) rotate(-3deg);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            z-index: 20;
+        }
+
+        .sticky-note {
+            background-color: var(--lime-cream);
+            border: 2px solid var(--dark-teal);
+            padding: 40px 30px;
+            box-shadow: 8px 8px 0px var(--dark-teal);
+            position: relative;
+            background-image: repeating-linear-gradient(transparent, transparent 31px, rgba(22,56,50,0.1) 31px, rgba(22,56,50,0.1) 32px);
+        }
+        .sticky-note::before {
+            content: '';
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 30px;
+            background: var(--strong-cyan);
+            border: 2px solid var(--dark-teal);
+            box-shadow: 2px 2px 0px var(--dark-teal);
+            rotate: -2deg;
+        }
+
+        .scroll-reveal {
+            opacity: 0;
+            transform: translateY(60px);
+            transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .scroll-reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .reveal-delay-1 { transition-delay: 150ms; }
+        .reveal-delay-2 { transition-delay: 300ms; }
+    </style>
+</head>
+<body>
+
+    <section class="h-screen w-full bg-stripes flex items-center justify-center p-6 relative">
+        <div id="envelope-card" class="interactive-card w-full max-w-md p-10 text-center flex flex-col justify-center items-center rounded-lg min-h-[300px]">
+            
+            <div id="card-front">
+                <!-- GANTI TEKS INI: Teks depan surat -->
+                <h2 class="text-4xl md:text-5xl font-bold mb-4" style="color: var(--cherry-rose);">get in touch! 💌</h2>
+                <p class="text-lg mb-8" style="color: var(--dark-teal); opacity: 0.7;">( tap to open )</p>
+                
+                <div class="space-y-4 w-full">
+                    <div class="border-b-2 w-full h-8 flex items-end pb-1" style="border-color: var(--dark-teal); color: var(--dark-teal);">To: My Favorite Person</div>
+                    <div class="border-b-2 w-full h-8" style="border-color: var(--dark-teal);"></div>
+                </div>
+                
+                <!-- GANTI TEKS INI: Tulisan tombol surat -->
+                <div class="mt-8 border-2 rounded px-6 py-2 inline-block font-bold transition" style="border-color: var(--dark-teal); color: var(--light-yellow); background-color: var(--dark-teal);">
+                    open it
+                </div>
+            </div>
+
+            <div id="card-back" class="card-inner-text">
+                <!-- GANTI TEKS INI: Kejutan tulisan gen Z konyol -->
+                <h1 class="font-caveat text-5xl md:text-6xl leading-tight" style="color: var(--cherry-rose);">
+                    ohh? hey? <br> you getting old omggg! 💀😭
+                </h1>
+                <p class="mt-6 text-xl animate-bounce" style="color: var(--dark-teal);">scroll down 👇</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-32 text-center overflow-hidden flex flex-col items-center justify-center px-4" style="background-color: var(--light-yellow);">
+        <div class="scroll-reveal">
+            <!-- GANTI TEKS INI: Tulisan besar yang di-scroll -->
+            <h2 class="font-caveat text-6xl md:text-8xl lg:text-[10rem] leading-none -rotate-3" style="color: var(--cherry-rose); text-shadow: 4px 4px 0px rgba(181, 24, 95, 0.2);">
+                HAPPY BIRTHDAYY
+            </h2>
+            <h2 class="text-5xl md:text-7xl font-bold mt-4 rotate-2" style="color: var(--strong-cyan); text-shadow: 3px 3px 0px var(--dark-teal);">
+                MY LOVE! ✨
+            </h2>
+        </div>
+    </section>
+
+    <section class="py-24 bg-dots px-4 relative overflow-hidden flex justify-center">
+        <!-- Hiasan latar belakan -->
+        <div class="absolute top-10 right-10 text-6xl opacity-70 -rotate-12">🎉</div>
+        <div class="absolute bottom-10 left-10 text-6xl opacity-70 rotate-12">🎈</div>
+
+        <div class="calendar-wrapper w-full max-w-3xl mt-10 scroll-reveal">
+            
+            <div class="calendar-spiral" id="spiral-container">
+                <!-- Javascript akan mengisi ring spiral di sini -->
+            </div>
+
+            <div class="p-8 pb-4">
+                <!-- GANTI TEKS INI: Bulan Kalender -->
+                <h2 class="text-4xl md:text-5xl font-bold mb-6 font-mono tracking-tighter" style="color: var(--cherry-rose);">September</h2>
+                
+                <div class="grid grid-columns-3 grid-cols-3 text-center text-xl pb-2 font-bold" style="color: var(--dark-teal); opacity: 0.8;">
+                    <div>friday</div>
+                    <div>saturday</div>
+                    <div>sunday</div>
+                </div>
+
+                <div class="calendar-grid bg-transparent">
+                    
+                    <!-- Kotak 1 -->
+                    <div class="calendar-cell">
+                        <span class="absolute top-2 right-3 font-bold text-xl">29</span>
+                        <!-- GANTI TEKS INI -->
+                        <div class="mt-8 font-caveat text-2xl -rotate-6 leading-tight">
+                            its my <br> favorite <br> boy's <br> birthday!
+                        </div>
+                    </div>
+
+                    <!-- Kotak 2 (Hari H Highlight - Warna Lime Cream) -->
+                    <div class="calendar-cell" style="background-color: var(--lime-cream);">
+                        <span class="absolute top-2 right-3 font-bold text-xl rounded-full w-8 h-8 flex items-center justify-center rotate-12 border-2" style="background-color: var(--light-yellow); border-color: var(--dark-teal);">30</span>
+                        
+                        <!-- GANTI URL GAMBAR INI: Foto kecil tokoh utama di kalender -->
+                        <img src="https://placehold.co/200x200/B5185F/FEFFE0?text=FOTO" class="w-24 h-24 object-cover rounded-full mx-auto mt-4 shadow-md relative z-10 border-2" style="border-color: var(--dark-teal);" alt="Birthday Person">
+                        
+                        <!-- Sticker -->
+                        <div class="absolute top-4 left-1/2 -translate-x-1/2 -mt-4 z-20 text-4xl -rotate-12">🎉</div>
+
+                        <!-- GANTI TEKS INI -->
+                        <div class="absolute bottom-2 left-2 right-2 text-center font-bold text-sm px-1 py-1 -rotate-2 border-2" style="background-color: var(--strong-cyan); color: var(--light-yellow); border-color: var(--dark-teal); box-shadow: 2px 2px 0px var(--dark-teal);">
+                            happy bday max!
+                        </div>
+                    </div>
+
+                    <!-- Kotak 3 -->
+                    <div class="calendar-cell">
+                        <span class="absolute top-2 right-3 font-bold text-xl">1</span>
+                        <div class="absolute top-10 right-4 text-5xl rotate-12 drop-shadow-md">🎂</div>
+                        <div class="absolute top-6 right-20 text-2xl rotate-45" style="color: var(--cherry-rose);">★</div>
+                    </div>
+
+                    <!-- Kotak 4 -->
+                    <div class="calendar-cell">
+                        <span class="absolute top-2 right-3 font-bold text-xl">6</span>
+                        <!-- GANTI URL GAMBAR INI -->
+                        <div class="p-2 mt-4 -rotate-12 w-28 mx-auto" style="background-color: var(--dark-teal); border: 2px dashed var(--light-yellow);">
+                            <img src="https://placehold.co/150x200/D0E86E/163832?text=Poto" class="w-full h-auto" alt="Stamp">
+                        </div>
+                        <div class="absolute top-20 right-2 font-caveat text-xl" style="color: var(--cherry-rose);">treat on me<br>today!</div>
+                    </div>
+
+                    <!-- Kotak 5 -->
+                    <div class="calendar-cell">
+                        <span class="absolute top-2 right-3 font-bold text-xl">7</span>
+                        <div class="absolute bottom-4 right-2 flex space-x-1 rotate-3 font-bold">
+                            <span class="px-2 py-1 -rotate-6 border" style="background-color: var(--strong-cyan); color: var(--light-yellow); border-color: var(--dark-teal);">1</span>
+                            <span class="px-2 py-1 rotate-6 border" style="background-color: var(--cherry-rose); color: var(--light-yellow); border-color: var(--dark-teal);">9</span>
+                        </div>
+                    </div>
+
+                    <!-- Kotak 6 -->
+                    <div class="calendar-cell">
+                        <span class="absolute top-2 right-3 font-bold text-xl">8</span>
+                         <div class="absolute bottom-6 left-2 flex space-x-1 -rotate-3 font-bold">
+                            <span class="px-2 py-1 -rotate-12 border" style="background-color: var(--light-yellow); border-color: var(--dark-teal);">9</span>
+                            <span class="px-2 py-1 rotate-12 border" style="background-color: var(--lime-cream); border-color: var(--dark-teal);">7</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-24 px-6" style="background-color: var(--lime-cream);">
+        <div class="max-w-5xl mx-auto text-center mb-16 scroll-reveal">
+            <!-- GANTI TEKS INI: Judul Section Polaroid -->
+            <h2 class="font-caveat text-5xl md:text-6xl" style="color: var(--cherry-rose);">Some core memories... 🎞️</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-10 max-w-4xl mx-auto place-items-center">
+            
+            <!-- Polaroid 1 -->
+            <div class="polaroid w-64 -rotate-6 scroll-reveal">
+                <!-- Tape warna Strong Cyan -->
+                <div class="washi-tape" style="background: rgba(53, 193, 194, 0.8);"></div>
+                <!-- GANTI URL GAMBAR INI -->
+                <img src="https://placehold.co/300x300/35C1C2/FEFFE0?text=FOTO+1" class="w-full h-56 object-cover border-2 border-transparent" style="border-color: var(--dark-teal);" alt="Memory 1">
+                <!-- GANTI TEKS INI -->
+                <p class="mt-4 text-2xl text-center font-caveat font-bold">our first trip! 🚗</p>
+            </div>
+
+            <!-- Polaroid 2 -->
+            <div class="polaroid w-64 rotate-3 scroll-reveal reveal-delay-1">
+                <!-- Tape warna Cherry Rose -->
+                <div class="washi-tape" style="background: rgba(181, 24, 95, 0.8);"></div>
+                <!-- GANTI URL GAMBAR INI -->
+                <img src="https://placehold.co/300x300/B5185F/FEFFE0?text=FOTO+2" class="w-full h-56 object-cover border-2" style="border-color: var(--dark-teal);" alt="Memory 2">
+                <!-- GANTI TEKS INI -->
+                <p class="mt-4 text-2xl text-center font-caveat font-bold">you being silly 🤪</p>
+            </div>
+
+            <!-- Polaroid 3 -->
+            <div class="polaroid w-64 -rotate-2 scroll-reveal reveal-delay-2">
+                <!-- Tape warna Light Yellow -->
+                <div class="washi-tape" style="background: rgba(254, 255, 224, 0.9);"></div>
+                <!-- GANTI URL GAMBAR INI -->
+                <img src="https://placehold.co/300x300/163832/D0E86E?text=FOTO+3" class="w-full h-56 object-cover border-2" style="border-color: var(--dark-teal);" alt="Memory 3">
+                <!-- GANTI TEKS INI -->
+                <p class="mt-4 text-2xl text-center font-caveat font-bold">love you lots ❤️</p>
+            </div>
+
+        </div>
+    </section>
+
+    <section class="py-24 px-4 flex justify-center items-center" style="background-color: var(--strong-cyan);">
+        <div class="sticky-note max-w-2xl w-full scroll-reveal">
+            
+            <!-- GANTI TEKS INI: Judul Surat Terakhir -->
+            <h3 class="font-caveat text-4xl mb-6" style="color: var(--cherry-rose);">a little note for you,</h3>
+            
+            <!-- GANTI TEKS INI: Isi Ucapan Ulang Tahun -->
+            <div class="text-xl md:text-2xl leading-relaxed space-y-4 font-bold" style="color: var(--dark-teal);">
+                <p>
+                    Happy birthday to the most annoying yet loveable person! 🎂 Thank you for always being there and sharing all these crazy memories with me.
+                </p>
+                <p>
+                    Semoga di umur yang baru ini kamu makin sukses, rezekinya lancar, dan pastinya makin sayang sama aku wkwk. Pokoknya all the best wishes for you, stop overthinking and just enjoy your day!
+                </p>
+            </div>
+
+            <!-- GANTI TEKS INI: Nama Pengirim -->
+            <div class="mt-10 text-right">
+                <p class="text-xl opacity-80">with so much love,</p>
+                <p class="font-caveat text-4xl mt-2 font-bold" style="color: var(--cherry-rose);">Your Fav Person ✨</p>
+            </div>
+
+        </div>
+    </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // Logika Klik Kartu
+            const card = document.getElementById('envelope-card');
+            const cardFront = document.getElementById('card-front');
+            const cardBack = document.getElementById('card-back');
+
+            card.addEventListener('click', () => {
+                if (!card.classList.contains('opened')) {
+                    card.classList.add('opened');
+                    
+                    cardFront.style.opacity = '0';
+                    setTimeout(() => {
+                        cardFront.style.display = 'none';
+                        cardBack.style.display = 'block';
+                        
+                        setTimeout(() => {
+                            cardBack.style.opacity = '1';
+                        }, 50);
+                    }, 300);
+                }
+            });
+
+            // Generate Spiral Rings
+            const spiralContainer = document.getElementById('spiral-container');
+            for (let i = 0; i < 15; i++) {
+                const ring = document.createElement('div');
+                ring.className = 'spiral-ring relative';
+                
+                const hole = document.createElement('div');
+                hole.className = 'spiral-hole';
+                
+                ring.appendChild(hole);
+                spiralContainer.appendChild(ring);
+            }
+
+            // Animasi Scroll (Fade In Up)
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.15 
+            };
+
+            const scrollObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        observer.unobserve(entry.target); 
+                    }
+                });
+            }, observerOptions);
+
+            const hiddenElements = document.querySelectorAll('.scroll-reveal');
+            hiddenElements.forEach(el => {
+                scrollObserver.observe(el);
+            });
+        });
+    </script>
+</body>
+</html>
